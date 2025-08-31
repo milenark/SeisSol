@@ -124,7 +124,6 @@ void InstantaneousTimeMirrorManager::updateVelocities() {
         material.local.c55 *= velocityScalingFactor;
         material.local.c56 *= velocityScalingFactor;
         material.local.c66 *= velocityScalingFactor;
-        
         material.local.rho *= velocityScalingFactor;
 
         for (std::size_t i = 0; i < Cell::NumFaces; ++i) {
@@ -149,7 +148,6 @@ void InstantaneousTimeMirrorManager::updateVelocities() {
           material.neighbor[i].c55 *= velocityScalingFactor;
           material.neighbor[i].c56 *= velocityScalingFactor;
           material.neighbor[i].c66 *= velocityScalingFactor;
-
           material.neighbor[i].rho *= velocityScalingFactor;
         }
       }
