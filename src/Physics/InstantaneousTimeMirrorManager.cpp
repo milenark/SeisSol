@@ -79,7 +79,83 @@ void InstantaneousTimeMirrorManager::syncPoint(double currentTime) {
 
 void InstantaneousTimeMirrorManager::updateVelocities() {
 #ifdef USE_ANISOTROPIC
-  logError() << "This feature has not been implemented for anisotropic yet";
+  // logError() << "This feature has not been implemented for anisotropic yet";
+  auto itmParameters = seissolInstance.getSeisSolParameters().model.itmParameters;
+  auto reflectionType = itmParameters.itmReflectionType;
+  for (auto& layer : ltsTree->leaves(Ghost)) {
+    CellMaterialData* materials = layer.var(lts->material);
+
+    if (reflectionType == seissol::initializer::parameters::ReflectionType::BothWaves) {
+      // scale density
+      // scale time step
+      for (std::size_t cell = 0; cell < layer.size(); ++cell) {
+        auto& material = materials[cell];
+        material.local.rho *= velocityScalingFactor * velocityScalingFactor;
+        for (std::size_t i = 0; i < Cell::NumFaces; ++i) {
+          material.neighbor[i].rho *= velocityScalingFactor * velocityScalingFactor;
+        }
+      }
+    }
+
+    else if (reflectionType ==
+             seissol::initializer::parameters::ReflectionType::BothWavesVelocity) {
+      // scale diagonal material parameters (c_xx) and density
+      // time step is NOT scaled
+      for (std::size_t cell = 0; cell < layer.size(); ++cell) {
+        auto& material = materials[cell];
+        material.local.c11 *= velocityScalingFactor;
+        material.local.c12 *= velocityScalingFactor;
+        material.local.c13 *= velocityScalingFactor;
+        material.local.c14 *= velocityScalingFactor;
+        material.local.c15 *= velocityScalingFactor;
+        material.local.c16 *= velocityScalingFactor;
+        material.local.c22 *= velocityScalingFactor;
+        material.local.c23 *= velocityScalingFactor;
+        material.local.c24 *= velocityScalingFactor;
+        material.local.c25 *= velocityScalingFactor;
+        material.local.c26 *= velocityScalingFactor;
+        material.local.c33 *= velocityScalingFactor;
+        material.local.c34 *= velocityScalingFactor;
+        material.local.c35 *= velocityScalingFactor;
+        material.local.c36 *= velocityScalingFactor;
+        material.local.c44 *= velocityScalingFactor;
+        material.local.c45 *= velocityScalingFactor;
+        material.local.c46 *= velocityScalingFactor;
+        material.local.c55 *= velocityScalingFactor;
+        material.local.c56 *= velocityScalingFactor;
+        material.local.c66 *= velocityScalingFactor;
+        
+        material.local.rho *= velocityScalingFactor;
+
+        for (std::size_t i = 0; i < Cell::NumFaces; ++i) {
+          material.neighbor[i].c11 *= velocityScalingFactor;
+          material.neighbor[i].c12 *= velocityScalingFactor;
+          material.neighbor[i].c13 *= velocityScalingFactor;
+          material.neighbor[i].c14 *= velocityScalingFactor;
+          material.neighbor[i].c15 *= velocityScalingFactor;
+          material.neighbor[i].c16 *= velocityScalingFactor;
+          material.neighbor[i].c22 *= velocityScalingFactor;
+          material.neighbor[i].c23 *= velocityScalingFactor;
+          material.neighbor[i].c24 *= velocityScalingFactor;
+          material.neighbor[i].c25 *= velocityScalingFactor;
+          material.neighbor[i].c26 *= velocityScalingFactor;
+          material.neighbor[i].c33 *= velocityScalingFactor;
+          material.neighbor[i].c34 *= velocityScalingFactor;
+          material.neighbor[i].c35 *= velocityScalingFactor;
+          material.neighbor[i].c36 *= velocityScalingFactor;
+          material.neighbor[i].c44 *= velocityScalingFactor;
+          material.neighbor[i].c45 *= velocityScalingFactor;
+          material.neighbor[i].c46 *= velocityScalingFactor;
+          material.neighbor[i].c55 *= velocityScalingFactor;
+          material.neighbor[i].c56 *= velocityScalingFactor;
+          material.neighbor[i].c66 *= velocityScalingFactor;
+
+          material.neighbor[i].rho *= velocityScalingFactor;
+        }
+      }
+    }
+  }
+
 #else
   auto itmParameters = seissolInstance.getSeisSolParameters().model.itmParameters;
   auto reflectionType = itmParameters.itmReflectionType;
